@@ -1,12 +1,14 @@
 import React from 'react';
 
+interface props {
+  result: string;
 
-const Alert = () => {
+}
+
+const Alert = ({ result } : props ) => {
   return (
     <div className="alert">
-        <span> :3 You win! :3 </span>
-        <br />
-        <span> :3 Congrats! :3 </span>
+        <span> You {result}! </span>
        
     </div>
   )

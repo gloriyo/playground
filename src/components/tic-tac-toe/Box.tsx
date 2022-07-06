@@ -45,7 +45,7 @@ const Box = ({ boardStatus, setBoardStatus, index, respondToBoxClick}  : props) 
                 src = pieceSrcs[2];
                 break;
         }
-        console.log(index, '- Has changed')
+        // console.log(index, '- Has changed')
 
         setBoxSrc(src);
 

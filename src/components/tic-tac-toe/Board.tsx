@@ -8,7 +8,7 @@ import Alert from './Alert';
 
 const Board = () => {
 
-    const [gameOver, setGameOver] = useState(false);
+    const [gameStatus, setGameStatus] = useState("ongoing");
     const [boardStatus, setBoardStatus] = useState(["none", "none", "none",
                                                 "none", "none", "none",
                                                 "none", "none", "none"]);
@@ -18,20 +18,21 @@ const Board = () => {
 
     useEffect(() => {
         console.log(boardStatus, '- Has changed');
-        checkWin();
+        checkGameOver();
 
     }, [boardStatus]);
                                                     
     const respondToBoxClick = () => {
         // our move >:)
 
+        setBoardStatus([...boardStatus]);
 
         let indices = boardStatus.map((e, i) => e === "none" ? i : -1).filter(i => i >= 0);
 
         if (indices.length == 0) {
             console.log("game over");
 
-            setGameOver(true);
+            setGameStatus("draw");
         } else {
             let chosenBox =  indices[Math.floor(Math.random() * indices.length)];
             let updatedBoardStatus = [...boardStatus];
@@ -46,7 +47,7 @@ const Board = () => {
         
     }
 
-    const checkWin = () => {
+    const checkGameOver = () => {
         const lines = [
             [0, 1, 2],
             [3, 4, 5],
@@ -56,16 +57,21 @@ const Board = () => {
             [2, 5, 8],
             [0, 4, 8],
             [2, 4, 6]
-          ];
-          for (let i = 0; i < lines.length; i++) {
+        ];
+        for (let i = 0; i < lines.length; i++) {
             const [a, b, c] = lines[i];
             if (boardStatus[a] !== "none") {
                 if (boardStatus[a] && boardStatus[a] === boardStatus[b] && boardStatus[a] === boardStatus[c]) {
                     // return boardStatus[a];
-                    setGameOver(true);
-                  }
+                    if (boardStatus[a] === "o") {
+                        setGameStatus("win");
+                    } else {
+                        setGameStatus("lose");
+                    }
+                    
+                }
             }
-          }
+        }
         //   return null;
     }
 
@@ -93,7 +99,7 @@ const Board = () => {
                 </div>
             
             </div>
-            { gameOver && <Alert />}
+            { gameStatus !== "ongoing" && <Alert result ={gameStatus} />}
         </div>
 
        
