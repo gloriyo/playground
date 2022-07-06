@@ -6,6 +6,7 @@ import Board from './tic-tac-toe/Board';
 const Game = () => {
   return (
     <Board />
+    
   )
 };
 

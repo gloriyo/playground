@@ -1,6 +1,12 @@
+.board-cnt {
+    text-align: -webkit-center;
+}
+
+
 .board {
     width: fit-content;
     background-size: contain;
+    margin: 1em;
 }
 
 .box {
@@ -28,3 +34,21 @@
 .pieces {
     width: -webkit-fill-available;
 }
+
+.alert {
+    /* background-color: #40d2ffd3; */
+    background-color: rgba(255, 255, 255, 0.932);
+    position: absolute;
+    padding: 1rem 1rem;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+    border-radius: 0.25rem;
+
+
+    width: 200px;
+    height: 50px;
+
+    top: 15%;  
+    left: 50%; 
+    transform: translate(-50%, -50%);
+  }
