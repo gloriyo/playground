@@ -20,7 +20,10 @@
 
 }
 
-
+.box > img {
+    height: 100px;
+    width: 100px;
+}
 
 .pieces {
     width: -webkit-fill-available;
