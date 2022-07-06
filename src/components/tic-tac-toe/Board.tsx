@@ -26,6 +26,7 @@ const Board = () => {
         setGameStatus(result);
         if (!playersTurn) {
             if (result === "ongoing") {
+                // get indices of available boxes
                 let indices = boardStatus.map((e, i) => e === "none" ? i : -1).filter(i => i >= 0);
     
                 if (indices.length == 0) {

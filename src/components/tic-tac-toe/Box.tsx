@@ -55,16 +55,20 @@ const Box = ({ boardStatus, setBoardStatus, index, setPlayerTurn, respondToBoxCl
 
     const handleBoxClick = () => {
         console.log("clicked");
-        setBoxSrc(oimg);
 
-        setPlayerTurn(false);
-        let updatedBoardStatus = boardStatus;
-        updatedBoardStatus[index] = "o";
+        if(boxSrc === noimg) {
+            setBoxSrc(oimg);
 
-        // setBoardStatus(updatedBoardStatus);
-        console.log(updatedBoardStatus);
-
-        respondToBoxClick();
+            setPlayerTurn(false);
+            let updatedBoardStatus = boardStatus;
+            updatedBoardStatus[index] = "o";
+    
+            // setBoardStatus(updatedBoardStatus);
+            console.log(updatedBoardStatus);
+    
+            respondToBoxClick();
+        }
+ 
     }
 
 
