@@ -1,3 +1,8 @@
+.board {
+    width: fit-content;
+    background-size: contain;
+}
+
 .box {
     line-height: 100px;
     height: 100px;
@@ -7,7 +12,15 @@
     text-align: center;
     width: 100px;
     
+    background: transparent;
+    border: none;
+
+    margin: 1em;
+
+
 }
+
+
 
 .pieces {
     width: -webkit-fill-available;
