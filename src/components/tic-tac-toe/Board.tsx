@@ -13,37 +13,55 @@ const Board = () => {
                                                 "none", "none", "none",
                                                 "none", "none", "none"]);
 
+    const [playersTurn, setPlayerTurn] = useState(true);
 
 
 
     useEffect(() => {
         console.log(boardStatus, '- Has changed');
-        checkGameOver();
+        let result = checkGameOver();
+        console.log("checking game over: ", result);
+
+
+        setGameStatus(result);
+        if (!playersTurn) {
+            if (result === "ongoing") {
+                let indices = boardStatus.map((e, i) => e === "none" ? i : -1).filter(i => i >= 0);
+    
+                if (indices.length == 0) {
+                    console.log("game over");
+        
+                    setGameStatus("draw");
+                    console.log("draw");
+                } else {
+                    let chosenBox =  indices[Math.floor(Math.random() * indices.length)];
+                    let updatedBoardStatus = [...boardStatus];
+                    updatedBoardStatus[chosenBox] = "x";
+                    setBoardStatus(updatedBoardStatus);
+                    setPlayerTurn(true);
+                }
+            }   
+        }   
+
+
 
     }, [boardStatus]);
+
+
+    useEffect(() => {
+        console.log("game status changed to: ", gameStatus);
+
+        // if (playersTurn) {
+        
+            // } else {
+        //     setPlayerTurn(true);
+        // }
+    }, [gameStatus]);
                                                     
     const respondToBoxClick = () => {
         // our move >:)
-
         setBoardStatus([...boardStatus]);
-
-        let indices = boardStatus.map((e, i) => e === "none" ? i : -1).filter(i => i >= 0);
-
-        if (indices.length == 0) {
-            console.log("game over");
-
-            setGameStatus("draw");
-        } else {
-            let chosenBox =  indices[Math.floor(Math.random() * indices.length)];
-            let updatedBoardStatus = [...boardStatus];
-            updatedBoardStatus[chosenBox] = "x";
-            setBoardStatus(updatedBoardStatus);
-        }
-
         
-        // while (boardStatus[chosenBox] !== "none") {
-        //     chosenBox =  Math.floor(Math.random() * 9);
-        // }
         
     }
 
@@ -64,14 +82,24 @@ const Board = () => {
                 if (boardStatus[a] && boardStatus[a] === boardStatus[b] && boardStatus[a] === boardStatus[c]) {
                     // return boardStatus[a];
                     if (boardStatus[a] === "o") {
-                        setGameStatus("win");
+                        // setGameStatus("win");
+                        // console.log("win");
+                        return "win"
+
                     } else {
-                        setGameStatus("lose");
+                        // setGameStatus("lose");
+                        // console.log("lose");
+                        return "lose"
                     }
                     
                 }
             }
         }
+        return "ongoing"
+        // setGameStatus("ongoing");
+        // console.log("ongoing");
+
+       
         //   return null;
     }
 
@@ -83,19 +111,19 @@ const Board = () => {
 
                 <div className="board-row">
                     {/* to-do: create models for props */}
-                    <Box boardStatus={boardStatus} setBoardStatus={setBoardStatus} index={0} respondToBoxClick={respondToBoxClick} />
-                    <Box boardStatus={boardStatus} setBoardStatus={setBoardStatus} index={1} respondToBoxClick={respondToBoxClick} />
-                    <Box boardStatus={boardStatus} setBoardStatus={setBoardStatus} index={2} respondToBoxClick={respondToBoxClick} />
+                    <Box boardStatus={boardStatus} setBoardStatus={setBoardStatus} index={0} setPlayerTurn={setPlayerTurn} respondToBoxClick={respondToBoxClick} />
+                    <Box boardStatus={boardStatus} setBoardStatus={setBoardStatus} index={1} setPlayerTurn={setPlayerTurn} respondToBoxClick={respondToBoxClick} />
+                    <Box boardStatus={boardStatus} setBoardStatus={setBoardStatus} index={2} setPlayerTurn={setPlayerTurn} respondToBoxClick={respondToBoxClick} />
                 </div>
                 <div className="board-row">
-                    <Box boardStatus={boardStatus} setBoardStatus={setBoardStatus} index={3} respondToBoxClick={respondToBoxClick} />
-                    <Box boardStatus={boardStatus} setBoardStatus={setBoardStatus} index={4} respondToBoxClick={respondToBoxClick} />
-                    <Box boardStatus={boardStatus} setBoardStatus={setBoardStatus} index={5} respondToBoxClick={respondToBoxClick} />
+                    <Box boardStatus={boardStatus} setBoardStatus={setBoardStatus} index={3} setPlayerTurn={setPlayerTurn} respondToBoxClick={respondToBoxClick} />
+                    <Box boardStatus={boardStatus} setBoardStatus={setBoardStatus} index={4} setPlayerTurn={setPlayerTurn} respondToBoxClick={respondToBoxClick} />
+                    <Box boardStatus={boardStatus} setBoardStatus={setBoardStatus} index={5} setPlayerTurn={setPlayerTurn} respondToBoxClick={respondToBoxClick} />
                 </div>
                 <div className="board-row">
-                    <Box boardStatus={boardStatus} setBoardStatus={setBoardStatus} index={6} respondToBoxClick={respondToBoxClick} />
-                    <Box boardStatus={boardStatus} setBoardStatus={setBoardStatus} index={7} respondToBoxClick={respondToBoxClick} />
-                    <Box boardStatus={boardStatus} setBoardStatus={setBoardStatus} index={8} respondToBoxClick={respondToBoxClick} />
+                    <Box boardStatus={boardStatus} setBoardStatus={setBoardStatus} index={6} setPlayerTurn={setPlayerTurn} respondToBoxClick={respondToBoxClick} />
+                    <Box boardStatus={boardStatus} setBoardStatus={setBoardStatus} index={7} setPlayerTurn={setPlayerTurn} respondToBoxClick={respondToBoxClick} />
+                    <Box boardStatus={boardStatus} setBoardStatus={setBoardStatus} index={8} setPlayerTurn={setPlayerTurn} respondToBoxClick={respondToBoxClick} />
                 </div>
             
             </div>

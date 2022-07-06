@@ -8,12 +8,13 @@ interface props {
     boardStatus: string[];
     setBoardStatus: React.Dispatch<React.SetStateAction<string[]>>;
     index: number;
+    setPlayerTurn: React.Dispatch<React.SetStateAction<boolean>>;
     respondToBoxClick: () => void;
 }
 
 let pieceSrcs = [noimg, oimg, ximg];
 
-const Box = ({ boardStatus, setBoardStatus, index, respondToBoxClick}  : props) => {
+const Box = ({ boardStatus, setBoardStatus, index, setPlayerTurn, respondToBoxClick}  : props) => {
 
 
     
@@ -56,6 +57,7 @@ const Box = ({ boardStatus, setBoardStatus, index, respondToBoxClick}  : props) 
         console.log("clicked");
         setBoxSrc(oimg);
 
+        setPlayerTurn(false);
         let updatedBoardStatus = boardStatus;
         updatedBoardStatus[index] = "o";
 
