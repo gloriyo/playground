@@ -14,8 +14,9 @@ function App() {
       <TopNav />
 			<BrowserRouter>
 				<Routes>
-					<Route path="/" element={<Game />} />
-					<Route path="game" element={<Game />} />
+					<Route path="/" element={<Game game="tic-tac-toe" />} />
+					<Route path="tic-tac-toe" element={<Game game="tic-tac-toe" />} />
+					<Route path="bricks" element={<Game game="bricks"/>} />
 				</Routes>
 			</BrowserRouter>
     </div>
