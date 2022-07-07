@@ -1,7 +1,10 @@
 // React adaptation of: https://developer.mozilla.org/en-US/docs/Games/Tutorials/2D_Breakout_game_pure_JavaScript
 
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
+
+import useState from 'react-usestateref';
+
 
 interface props {
   result: string;
@@ -11,18 +14,28 @@ interface props {
 const Canvas = () => {
 
 
+    const ballRadius = 10;
+
+    const paddleHeight = 10;
+    const paddleWidth = 75;
+
+
 
 
     const [canvasWidth, setCanvasWidth] = useState(300);
     const [canvasHeight, setCanvasHeight] = useState(300);
 
 
-    const [ballx, setBallx] = useState(canvasWidth/2);
-    const [bally, setBally] = useState(canvasHeight-30);
+    const [ballx, setBallx, ballxRef] = useState(canvasWidth/2);
+    const [bally, setBally, ballyRef] = useState(canvasHeight-30);
 
 
-    const [balldx, setBalldx] = useState(2);
-    const [balldy, setBalldy] = useState(-2);
+    const [balldx, setBalldx, balldxRef] = useState(2);
+    const [balldy, setBalldy, balldyRef] = useState(-2);
+
+    const [paddlex, setPaddlex, paddlexRef] = useState((canvasWidth-paddleWidth)/2);
+    // const [paddley, setPaddley, paddleyRef] = useState(-2);
+
 
     const [canvasContext, setCanvasContext] = useState<CanvasRenderingContext2D | null>(null);
 
@@ -32,87 +45,174 @@ const Canvas = () => {
         console.log("x ", ballx, "y ", bally);
 
         if(canvasContext) {
+            canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
+
+            // draw the ball
             canvasContext.beginPath();
-            canvasContext.arc(ballx, bally, 10, 0, Math.PI*2);
+            canvasContext.arc(ballx, bally, ballRadius, 0, Math.PI*2);
             canvasContext.fillStyle = "#0095DD";
             canvasContext.fill();
             canvasContext.closePath();
+
+            // draw the paddle
+            canvasContext.beginPath();
+            canvasContext.rect(paddlex, canvasHeight-paddleHeight, paddleWidth, paddleHeight);
+            canvasContext.fillStyle = "#0095DD";
+            canvasContext.fill();
+            canvasContext.closePath();
+
         }
 
-    }, [ballx, bally])
+    }, [canvasContext, ballx, bally])
 
     const draw = (ctx: CanvasRenderingContext2D) => {
 
-
         console.log("drawing");
-        console.log("x ", ballx, "y ", bally);
 
-        let updatedBallx = ballx + balldx;
-        let updatedBally = bally + balldy;
+        if(ctx) {
+            // ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 
-        setBallx(prevBallx => prevBallx + balldx);
-        setBally(prevBally => prevBally + balldy);
+            
+            // check ball collision
+            // setBallx(prevBallx => {
+            //     if (prevBallx+balldx > canvasWidth-ballRadius) {
 
-
-        console.log("x ", ballx, "y ", bally);
-    }
-
-    // const drawIntervals = (ctx: CanvasRenderingContext2D) => {
-    //     setInterval(() => draw(ctx), 500);
-    // }
+            //         console.log("balldx: ", balldx)
 
 
-    // componentDidMount() {
+            //         console.log("ball collision")
+            //         if(balldx > 0)
+            //             setBalldx(-balldx);
+            //     }
+            //     console.log("ball colaaaaaaaaaaaaaaaaaaalision")
 
-    // }
-
-
-    // const useMountEffect = () => useEffect(() => {
-
-    //     // console.log(canvasWidth/2);
-    //     // setBallx(canvasWidth/2);
-    //     // setBally(canvasHeight/2);
+            //     return prevBallx + balldx});
 
 
+            let currentBalldx = balldxRef.current;
+            let currentBalldy = balldyRef.current;
 
-    //     let canvas = document.getElementById("bricks-canvas") as HTMLCanvasElement;
-    //     let ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
-    //     // draw(ctx);
+            setBallx(prevBallx => prevBallx + currentBalldx);
 
-    //     drawIntervals(ctx);
+            setBally(prevBally => prevBally + currentBalldy);
 
-    // }, []);
+    
+
+
+
+    
+        }
+
+    };
+
+    useEffect(() => {
+
+        let currentBalldx = balldxRef.current;
+        let currentBalldy = balldyRef.current;
+
+
+        if (ballxRef.current+currentBalldx > canvasWidth-ballRadius ||
+            ballxRef.current+currentBalldx < ballRadius) {
+            console.log("ball flip x")
+            console.log("ball flip x")
+            console.log("ball flip x")
+            console.log("ball flip x")
+
+
+            setBalldx(prevBalldx => -prevBalldx);
+        }
+
+        if (ballyRef.current+currentBalldy > canvasHeight-ballRadius ||
+            ballyRef.current+currentBalldy < ballRadius) {
+            console.log("ball flip y")
+            console.log("ball flip y")
+            console.log("ball flip y")
+            console.log("ball flip y")
+
+
+            setBalldy(prevBalldy => -prevBalldy);
+        }
+
+
+
+    }, [ballx, bally]);
+
+
+    const drawIntervals = useCallback(() => {
+
+        console.log("hi");
+
+
+
+        
+
+
+        
+    }, []);
+
   
     useEffect(() => {
 
-        // console.log(canvasWidth/2);
-        // setBallx(canvasWidth/2);
-        // setBally(canvasHeight/2);
+        console.log("hi begin");
 
+
+        let canvasCnt = document.getElementById("canvas-cnt") as HTMLDivElement;
+        canvasCnt.focus();
 
 
         let canvas = document.getElementById("bricks-canvas") as HTMLCanvasElement;
+
+
+
         let ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
         setCanvasContext(ctx);
 
-        // draw(ctx);
-
-        // drawIntervals(ctx);
-
-        const intervalId = setInterval(() => draw(ctx), 100);
+        const intervalId = setInterval(() => draw(ctx), 1000);
 
         return () => clearInterval(intervalId);
-
 
     }, []);
 
 
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        console.log(event);
+        if (event.code === "ArrowLeft") {
+            //   alert(`You have typed "${enteredText}"`);
+                console.log("ArrowLeft pressed");
+        
+
+        
+            } else if (event.code === "ArrowRight") {
+                console.log("ArrowRight pressed");
+
+            }
+    }
+
+    const handleKeyUp = (event: React.KeyboardEvent<HTMLDivElement>) => {
+        console.log(event);
+        if (event.code === "ArrowLeft") {
+            //   alert(`You have typed "${enteredText}"`);
+                console.log("ArrowLeft lifted");
+        
+
+        
+            } else if (event.code === "ArrowRight") {
+                console.log("ArrowRight lifted");
+
+            }
+    }
   
     return (
-    <div className="canvas-cnt">
-        <canvas id="bricks-canvas" className="canvas" width={canvasWidth} height={canvasHeight} style={{ border: "1px solid #d3d3d3" }}>
+    <div id="canvas-cnt" className="canvas-cnt" 
+        tabIndex={-1} 
+        onKeyDown={(e) => handleKeyDown(e)}
+        onKeyUp={(e) => handleKeyUp(e)} >
+        <canvas id="bricks-canvas" 
+                className="canvas" 
+                width={canvasWidth} height={canvasHeight} 
+                style={{ border: "1px solid #d3d3d3" }}>
 
         </canvas>
        
