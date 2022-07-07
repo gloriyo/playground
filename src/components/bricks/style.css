@@ -2,6 +2,11 @@
     text-align: -webkit-center;
 }
 
+/* #bricks-canvas {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+} */
+
 
 .board {
     width: fit-content;

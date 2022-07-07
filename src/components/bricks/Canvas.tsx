@@ -20,6 +20,7 @@ const Canvas = () => {
     const paddleWidth = 75;
 
 
+    const [gameStatus, setGameStatus] = useState("ongoing");
 
 
     const [canvasWidth, setCanvasWidth] = useState(300);
@@ -38,6 +39,12 @@ const Canvas = () => {
 
 
     const [canvasContext, setCanvasContext] = useState<CanvasRenderingContext2D | null>(null);
+    const [canvasInterval, setCanvasInterval, canvasIntervalRef] = useState<NodeJS.Timer>();
+
+
+
+    const [rightPressed, setRightPressed, rightPressedRef] = useState(false);
+    const [leftPressed, setLeftPressed, leftPressedRef] = useState(false);
 
     useEffect(() => {
         
@@ -70,25 +77,6 @@ const Canvas = () => {
         console.log("drawing");
 
         if(ctx) {
-            // ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-
-            
-            // check ball collision
-            // setBallx(prevBallx => {
-            //     if (prevBallx+balldx > canvasWidth-ballRadius) {
-
-            //         console.log("balldx: ", balldx)
-
-
-            //         console.log("ball collision")
-            //         if(balldx > 0)
-            //             setBalldx(-balldx);
-            //     }
-            //     console.log("ball colaaaaaaaaaaaaaaaaaaalision")
-
-            //     return prevBallx + balldx});
-
-
             let currentBalldx = balldxRef.current;
             let currentBalldy = balldyRef.current;
 
@@ -97,7 +85,76 @@ const Canvas = () => {
 
             setBally(prevBally => prevBally + currentBalldy);
 
+
+            if (ballxRef.current+currentBalldx > canvasWidth-ballRadius ||
+                ballxRef.current+currentBalldx < ballRadius) {
+                console.log("ball flip x")
+                console.log("ball flip x")
+                console.log("ball flip x")
+                console.log("ball flip x")
     
+    
+                setBalldx(prevBalldx => -prevBalldx);
+            } 
+            
+            if (ballyRef.current+currentBalldy > canvasHeight-ballRadius) {
+                // Game Over
+                setGameStatus("lost");
+
+                console.log("gameover")
+                // alert("GAME OVER");
+
+                console.log(canvasIntervalRef.current)
+
+                clearInterval(canvasIntervalRef.current);
+
+            }
+            else if (ballyRef.current+currentBalldy < ballRadius) {
+
+                console.log("ball flip y")
+                console.log("ball flip y")
+                console.log("ball flip y")
+                console.log("ball flip y")
+    
+    
+                setBalldy(prevBalldy => -prevBalldy);
+            }
+
+
+
+
+
+            if (rightPressedRef.current) {
+
+
+                // if(paddlex)
+                setPaddlex(prevPaddlex => prevPaddlex+7)
+
+
+                if(paddlexRef.current+paddleWidth > canvasWidth) {
+                    setPaddlex(canvasWidth-paddleWidth)
+                }
+
+                console.log("right-pressed")
+                console.log("right-pressed")
+                console.log("right-pressed")
+                console.log("right-pressed")
+            }
+    
+            else if (leftPressedRef.current) {
+                console.log("left-pressed")
+                console.log("left-pressed")
+                console.log("left-pressed")
+                console.log("left-pressed")
+    
+                setPaddlex(prevPaddlex => prevPaddlex-7)
+
+                if(paddlexRef.current < 0) {
+                    setPaddlex(0)
+                }
+
+
+            }
 
 
 
@@ -106,37 +163,65 @@ const Canvas = () => {
 
     };
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        let currentBalldx = balldxRef.current;
-        let currentBalldy = balldyRef.current;
-
-
-        if (ballxRef.current+currentBalldx > canvasWidth-ballRadius ||
-            ballxRef.current+currentBalldx < ballRadius) {
-            console.log("ball flip x")
-            console.log("ball flip x")
-            console.log("ball flip x")
-            console.log("ball flip x")
+    //     let currentBalldx = balldxRef.current;
+    //     let currentBalldy = balldyRef.current;
 
 
-            setBalldx(prevBalldx => -prevBalldx);
-        }
-
-        if (ballyRef.current+currentBalldy > canvasHeight-ballRadius ||
-            ballyRef.current+currentBalldy < ballRadius) {
-            console.log("ball flip y")
-            console.log("ball flip y")
-            console.log("ball flip y")
-            console.log("ball flip y")
+    //     if (ballxRef.current+currentBalldx > canvasWidth-ballRadius ||
+    //         ballxRef.current+currentBalldx < ballRadius) {
+    //         console.log("ball flip x")
+    //         console.log("ball flip x")
+    //         console.log("ball flip x")
+    //         console.log("ball flip x")
 
 
-            setBalldy(prevBalldy => -prevBalldy);
-        }
+    //         setBalldx(prevBalldx => -prevBalldx);
+    //     }
+
+    //     if (ballyRef.current+currentBalldy > canvasHeight-ballRadius ||
+    //         ballyRef.current+currentBalldy < ballRadius) {
+    //         console.log("ball flip y")
+    //         console.log("ball flip y")
+    //         console.log("ball flip y")
+    //         console.log("ball flip y")
+
+
+    //         setBalldy(prevBalldy => -prevBalldy);
+    //     }
 
 
 
-    }, [ballx, bally]);
+    // }, [ballx, bally]);
+
+    // useEffect(() => {
+
+
+    //     if (rightPressed) {
+    //         console.log("right-pressed")
+    //         console.log("right-pressed")
+    //         console.log("right-pressed")
+    //         console.log("right-pressed")
+
+
+    //         setBalldx(prevBalldx => -prevBalldx);
+    //     }
+
+    //     else if (leftPressed) {
+    //         console.log("left-pressed")
+    //         console.log("left-pressed")
+    //         console.log("left-pressed")
+    //         console.log("left-pressed")
+
+
+    //         setBalldy(prevBalldy => -prevBalldy);
+    //     }
+
+
+
+    // }, [rightPressed, leftPressed]);
+
 
 
     const drawIntervals = useCallback(() => {
@@ -169,39 +254,54 @@ const Canvas = () => {
 
         setCanvasContext(ctx);
 
-        const intervalId = setInterval(() => draw(ctx), 1000);
+        const intervalId = setInterval(() => draw(ctx), 100);
 
-        return () => clearInterval(intervalId);
+        console.log("INTERVAL", intervalId)
+        setCanvasInterval(intervalId)
+
+        // return () => clearInterval(intervalId);
 
     }, []);
 
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-        console.log(event);
-        if (event.code === "ArrowLeft") {
-            //   alert(`You have typed "${enteredText}"`);
-                console.log("ArrowLeft pressed");
-        
+        // console.log(event);
 
-        
+        if (gameStatus === "ongoing") {
+
+            if (event.code === "ArrowLeft") {
+                setLeftPressed(true);
+                console.log("ArrowLeft pressed");
+
+            
             } else if (event.code === "ArrowRight") {
                 console.log("ArrowRight pressed");
+                
+
+                setRightPressed(true);
+
 
             }
+        }    
     }
 
     const handleKeyUp = (event: React.KeyboardEvent<HTMLDivElement>) => {
-        console.log(event);
-        if (event.code === "ArrowLeft") {
-            //   alert(`You have typed "${enteredText}"`);
-                console.log("ArrowLeft lifted");
-        
 
+        if (gameStatus === "ongoing") {
+            if (event.code === "ArrowLeft") {
+                //   alert(`You have typed "${enteredText}"`);
+                    console.log("ArrowLeft lifted");
+                    
+                    setLeftPressed(false);
         
-            } else if (event.code === "ArrowRight") {
-                console.log("ArrowRight lifted");
+            
+                } else if (event.code === "ArrowRight") {
+                    console.log("ArrowRight lifted");
+                    
+                    setRightPressed(false);
+                }
+        }
 
-            }
     }
   
     return (
