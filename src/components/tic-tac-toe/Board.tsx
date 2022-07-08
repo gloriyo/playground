@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Box from './Box';
-import "./style.css";
+import "../../game-style.css";
 
 import boardImg from "./img/board.png";
 import Alert from './Alert';

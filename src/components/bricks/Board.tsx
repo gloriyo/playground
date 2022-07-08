@@ -1,6 +1,6 @@
 import React from 'react';
 import Canvas from './Canvas';
-import "./style.css";
+// import './bricks-style.css';
 
 
 const Board = () => {
