@@ -154,6 +154,7 @@ const Canvas = () => {
                 setBalldy(prevBalldy => -prevBalldy);
             }
 
+            
 
 
 
