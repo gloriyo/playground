@@ -4,6 +4,7 @@
 import React, { useCallback, useEffect } from 'react';
 
 import useState from 'react-usestateref';
+import Alert from './Alert';
 
 
 interface props {
@@ -35,6 +36,8 @@ const Canvas = () => {
     const [balldy, setBalldy, balldyRef] = useState(-2);
 
     const [paddlex, setPaddlex, paddlexRef] = useState((canvasWidth-paddleWidth)/2);
+    const [paddley, setPaddley, paddleyRef] = useState(canvasHeight-(2*paddleHeight));
+
     // const [paddley, setPaddley, paddleyRef] = useState(-2);
 
 
@@ -63,7 +66,7 @@ const Canvas = () => {
 
             // draw the paddle
             canvasContext.beginPath();
-            canvasContext.rect(paddlex, canvasHeight-paddleHeight, paddleWidth, paddleHeight);
+            canvasContext.rect(paddlex, paddley, paddleWidth, paddleHeight);
             canvasContext.fillStyle = "#0095DD";
             canvasContext.fill();
             canvasContext.closePath();
@@ -86,8 +89,16 @@ const Canvas = () => {
             setBally(prevBally => prevBally + currentBalldy);
 
 
-            if (ballxRef.current+currentBalldx > canvasWidth-ballRadius ||
-                ballxRef.current+currentBalldx < ballRadius) {
+            let currentBallx = ballxRef.current;
+            let nextBallx = ballxRef.current + currentBalldx
+            let nextBally = ballyRef.current + currentBalldy
+            
+            let currentPaddlex = paddlexRef.current;
+            let currentPaddley = paddleyRef.current;
+
+            // check if ball hit the side walls
+            if (nextBallx > canvasWidth-ballRadius ||
+                nextBallx < ballRadius) {
                 console.log("ball flip x")
                 console.log("ball flip x")
                 console.log("ball flip x")
@@ -97,24 +108,47 @@ const Canvas = () => {
                 setBalldx(prevBalldx => -prevBalldx);
             } 
             
-            if (ballyRef.current+currentBalldy > canvasHeight-ballRadius) {
-                // Game Over
-                setGameStatus("lost");
+            // check if ball hit the top wall
+            if (nextBally < ballRadius) {
 
-                console.log("gameover")
-                // alert("GAME OVER");
-
-                console.log(canvasIntervalRef.current)
-
-                clearInterval(canvasIntervalRef.current);
-
+                console.log("ball flip y")
+                console.log("ball flip y")
+                console.log("ball flip y")
+                console.log("ball flip y")
+    
+    
+                setBalldy(prevBalldy => -prevBalldy);
             }
-            else if (ballyRef.current+currentBalldy < ballRadius) {
 
-                console.log("ball flip y")
-                console.log("ball flip y")
-                console.log("ball flip y")
-                console.log("ball flip y")
+            // check if ball is hit the ground`
+            else if (nextBally > canvasHeight-ballRadius) {
+                
+                // if (currentBallx > currentPaddlex &&
+                //     currentBallx < currentPaddlex + paddleWidth) {
+                        
+
+                //     setBalldy(prevBalldy => -prevBalldy);
+                // } else {
+                    // Game Over
+                    setGameStatus("lost");
+
+                    console.log("gameover")
+                    // alert("GAME OVER");
+
+                    console.log(canvasIntervalRef.current)
+
+                    clearInterval(canvasIntervalRef.current);
+                // }
+            }
+            // check if ball hit the paddle
+            else if (nextBally > currentPaddley-ballRadius &&
+                currentBallx > currentPaddlex &&
+                currentBallx < currentPaddlex + paddleWidth) {
+
+                console.log("ball ground")
+                console.log("ball ground")
+                console.log("ball ground")
+                console.log("ball ground")
     
     
                 setBalldy(prevBalldy => -prevBalldy);
@@ -163,79 +197,6 @@ const Canvas = () => {
 
     };
 
-    // useEffect(() => {
-
-    //     let currentBalldx = balldxRef.current;
-    //     let currentBalldy = balldyRef.current;
-
-
-    //     if (ballxRef.current+currentBalldx > canvasWidth-ballRadius ||
-    //         ballxRef.current+currentBalldx < ballRadius) {
-    //         console.log("ball flip x")
-    //         console.log("ball flip x")
-    //         console.log("ball flip x")
-    //         console.log("ball flip x")
-
-
-    //         setBalldx(prevBalldx => -prevBalldx);
-    //     }
-
-    //     if (ballyRef.current+currentBalldy > canvasHeight-ballRadius ||
-    //         ballyRef.current+currentBalldy < ballRadius) {
-    //         console.log("ball flip y")
-    //         console.log("ball flip y")
-    //         console.log("ball flip y")
-    //         console.log("ball flip y")
-
-
-    //         setBalldy(prevBalldy => -prevBalldy);
-    //     }
-
-
-
-    // }, [ballx, bally]);
-
-    // useEffect(() => {
-
-
-    //     if (rightPressed) {
-    //         console.log("right-pressed")
-    //         console.log("right-pressed")
-    //         console.log("right-pressed")
-    //         console.log("right-pressed")
-
-
-    //         setBalldx(prevBalldx => -prevBalldx);
-    //     }
-
-    //     else if (leftPressed) {
-    //         console.log("left-pressed")
-    //         console.log("left-pressed")
-    //         console.log("left-pressed")
-    //         console.log("left-pressed")
-
-
-    //         setBalldy(prevBalldy => -prevBalldy);
-    //     }
-
-
-
-    // }, [rightPressed, leftPressed]);
-
-
-
-    const drawIntervals = useCallback(() => {
-
-        console.log("hi");
-
-
-
-        
-
-
-        
-    }, []);
-
   
     useEffect(() => {
 
@@ -254,18 +215,15 @@ const Canvas = () => {
 
         setCanvasContext(ctx);
 
-        const intervalId = setInterval(() => draw(ctx), 100);
+        const intervalId = setInterval(() => draw(ctx), 20);
 
         console.log("INTERVAL", intervalId)
         setCanvasInterval(intervalId)
-
-        // return () => clearInterval(intervalId);
 
     }, []);
 
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-        // console.log(event);
 
         if (gameStatus === "ongoing") {
 
@@ -277,10 +235,7 @@ const Canvas = () => {
             } else if (event.code === "ArrowRight") {
                 console.log("ArrowRight pressed");
                 
-
                 setRightPressed(true);
-
-
             }
         }    
     }
@@ -315,7 +270,7 @@ const Canvas = () => {
                 style={{ border: "1px solid #d3d3d3" }}>
 
         </canvas>
-       
+        { gameStatus !== "ongoing" && <Alert result ={gameStatus} />}
     </div>
   )
 };
