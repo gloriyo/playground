@@ -267,15 +267,8 @@ const Canvas = () => {
                 if(paddlexRef.current < 0) {
                     setPaddlex(0)
                 }
-
-
             }
-
-
-
-    
         }
-
     };
 
   
@@ -289,8 +282,6 @@ const Canvas = () => {
 
 
         let canvas = document.getElementById("bricks-canvas") as HTMLCanvasElement;
-
-
 
         let ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
