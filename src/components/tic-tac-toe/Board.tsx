@@ -15,8 +15,6 @@ const Board = () => {
 
     const [playersTurn, setPlayerTurn] = useState(true);
 
-
-
     useEffect(() => {
         console.log(boardStatus, '- Has changed');
         let result = checkGameOver();
@@ -43,8 +41,6 @@ const Board = () => {
                 }
             }   
         }   
-
-
 
     }, [boardStatus]);
 
@@ -97,11 +93,7 @@ const Board = () => {
             }
         }
         return "ongoing"
-        // setGameStatus("ongoing");
-        // console.log("ongoing");
 
-       
-        //   return null;
     }
 
     return (
