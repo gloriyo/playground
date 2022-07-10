@@ -53,10 +53,10 @@ let origin: coords = {x: 0, y: 0, count: 1};
 
 let brickCoords:coords[][] = Array.from(Array(brickRows), () => Array(brickColumns).fill({ x: 0, y: 0, count: 1 }));
 
-const defaultSpeed = 5 * scaleFactor *0.8;
+const defaultSpeed = 5 * scaleFactor;
 
-const defaultSpeedx = 3 * scaleFactor*0.8;
-const defaultSpeedy = -4 * scaleFactor*0.8;
+const defaultSpeedx = 3 * scaleFactor;
+const defaultSpeedy = -4 * scaleFactor;
 
 
 
@@ -298,8 +298,6 @@ const Canvas = () => {
   
     useEffect(() => {
 
-
-        console.log("hi begin");
 
         ballImg.src = ballSrc
         bricks1Img.src = bricks1Src
