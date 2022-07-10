@@ -204,7 +204,7 @@ const Canvas = () => {
                             setGameScore(prevGameScore => prevGameScore + 1);
 
                             if(gameScoreRef.current == brickRows*brickColumns) {
-                                alert("YOU WIN, CONGRATULATIONS!");
+                                setGameStatus("win");
                                 clearInterval(canvasInterval); // Needed for Chrome to end game
                             }
                         }
@@ -216,7 +216,7 @@ const Canvas = () => {
 
                             setGameScore(prevGameScore => prevGameScore + 1);
                             if(gameScoreRef.current == brickRows*brickColumns) {
-                                alert("YOU WIN, CONGRATULATIONS!");
+                                setGameStatus("win");
                                 clearInterval(canvasInterval); // Needed for Chrome to end game
                             }
 
