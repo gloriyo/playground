@@ -11,6 +11,8 @@ import ballSrc from "./img/ball.png";
 import bricks1Src from "./img/bricks-1.png";
 import bricks2Src from "./img/bricks-2.png";
 import bricks3Src from "./img/bricks-3.png";
+import bricks4Src from "./img/bricks-4.png";
+import bricks5Src from "./img/bricks-5.png";
 
 import paddleSrc from "./img/paddle.png";
 
@@ -18,6 +20,10 @@ const ballImg = new Image();
 const bricks1Img = new Image();
 const bricks2Img = new Image();
 const bricks3Img = new Image();
+const bricks4Img = new Image();
+const bricks5Img = new Image();
+
+
 
 const paddleImg = new Image();
 
@@ -129,6 +135,13 @@ const Canvas = () => {
                         break;
                     case 1:
                         chosenImg = bricks2Img;
+                        break;
+                    case 3:
+                        chosenImg = bricks4Img;
+                        break;
+                    case 4:
+                        chosenImg = bricks5Img;
+                        break;
                 }
                 row.forEach((b, j) => {
                     if (b.count > 0) {
@@ -292,7 +305,8 @@ const Canvas = () => {
         bricks1Img.src = bricks1Src
         bricks2Img.src = bricks2Src
         bricks3Img.src = bricks3Src
-
+        bricks4Img.src = bricks4Src       
+        bricks5Img.src = bricks5Src
         paddleImg.src = paddleSrc
 
         let canvasCnt = document.getElementById("canvas-cnt") as HTMLDivElement;
