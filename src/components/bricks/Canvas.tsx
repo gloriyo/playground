@@ -7,24 +7,31 @@ import { BrowserRouter } from 'react-router-dom';
 import useState from 'react-usestateref';
 import Alert from './Alert';
 
+import ballSrc from "./img/ball.png";
+import bricks1Src from "./img/bricks-1.png";
 
-const defaultCanvasWidth = 460;
-const defaultCanvasHeight = 400;
+const ballImg = new Image();
+const bricks1Img = new Image();
+
+const scaleFactor = 2.5;
+
+const defaultCanvasWidth = 460 * scaleFactor;
+const defaultCanvasHeight = 400 * scaleFactor;
 
 
-const ballRadius = 8;
+const ballWidth = 15 * scaleFactor;
 
-const paddleHeight = 10;
-const paddleWidth = 70;
+const paddleHeight = 10 * scaleFactor;
+const paddleWidth = 70 * scaleFactor;
 
 
 const brickRows = 5;
 const brickColumns = 7;
-const brickWidth = 60;
-const brickHeight = 20;
-const brickPadding = 5;
-const brickOffsetTop = 25; 
-const brickOffsetLeft = 5;
+const brickWidth = 60 * scaleFactor;
+const brickHeight = 20 * scaleFactor;
+const brickPadding = 5 * scaleFactor;
+const brickOffsetTop = 25 * scaleFactor; 
+const brickOffsetLeft = 5 * scaleFactor;
 
 type coords = { [value: string]: number }
 
@@ -32,10 +39,10 @@ let origin: coords = {x: 0, y: 0, count: 1};
 
 let brickCoords:coords[][] = Array.from(Array(brickRows), () => Array(brickColumns).fill({ x: 0, y: 0, count: 1 }));
 
-const defaultSpeed = 5;
+const defaultSpeed = 5 * scaleFactor *0.8;
 
-const defaultSpeedx = 3
-const defaultSpeedy = -4
+const defaultSpeedx = 3 * scaleFactor*0.8;
+const defaultSpeedy = -4 * scaleFactor*0.8;
 
 
 
@@ -82,8 +89,8 @@ const Canvas = () => {
     // const [bricks, setBricks, bricksRef] = useState(brickCoords);
 
 
-    const [ballx, setBallx, ballxRef] = useState(canvasWidth/2);
-    const [bally, setBally, ballyRef] = useState(canvasHeight-30);
+    const [ballx, setBallx, ballxRef] = useState((canvasWidth-ballWidth)/2);
+    const [bally, setBally, ballyRef] = useState(canvasHeight-(2*paddleHeight)-ballWidth);
 
 
     const [ballSpeed, setBallSpeed, ballSpeedRef] = useState(defaultSpeed);
@@ -92,6 +99,7 @@ const Canvas = () => {
 
     const [paddlex, setPaddlex, paddlexRef] = useState((canvasWidth-paddleWidth)/2);
     const [paddley, setPaddley, paddleyRef] = useState(canvasHeight-(2*paddleHeight));
+    const [paddleSpeed, setPaddleSpeed, paddleSpeedRef] = useState(defaultSpeed);
 
     // const [paddley, setPaddley, paddleyRef] = useState(-2);
 
@@ -114,10 +122,14 @@ const Canvas = () => {
 
             // draw the ball
             canvasContext.beginPath();
-            canvasContext.arc(ballx, bally, ballRadius, 0, Math.PI*2);
-            canvasContext.fillStyle = "#0095DD";
-            canvasContext.fill();
-            canvasContext.closePath();
+            // canvasContext.arc(ballx, bally, ballWidth, 0, Math.PI*2);
+            // canvasContext.fillStyle = "#0095DD";
+            // canvasContext.fill();
+            // canvasContext.closePath();
+
+            canvasContext.drawImage(ballImg, ballx, bally, ballWidth, ballWidth);
+
+
 
             // draw the paddle
             canvasContext.beginPath();
@@ -131,10 +143,11 @@ const Canvas = () => {
                 row.forEach((b, j) => {
                     if (b.count > 0) {
                         canvasContext.beginPath();
-                        canvasContext.rect( b.x, b.y, brickWidth, brickHeight);
-                        canvasContext.fillStyle = "#0095DD";
-                        canvasContext.fill();
-                        canvasContext.closePath();
+                        // canvasContext.rect( b.x, b.y, brickWidth, brickHeight);
+                        // canvasContext.fillStyle = "#0095DD";
+                        // canvasContext.fill();
+                        // canvasContext.closePath();
+                        canvasContext.drawImage(bricks1Img, b.x, b.y, brickWidth, brickHeight)
                     }
 
                 })
@@ -164,11 +177,15 @@ const Canvas = () => {
 
 
             let currentBallx = ballxRef.current;
+            let currentBally = ballyRef.current;
             let nextBallx = ballxRef.current + currentBalldx
             let nextBally = ballyRef.current + currentBalldy
             
             let currentPaddlex = paddlexRef.current;
             let currentPaddley = paddleyRef.current;
+
+            let ballCenterx = nextBallx + (ballWidth/2)
+            let ballCentery = nextBally + (ballWidth/2)
 
             // check if ball hit the bricks
             for(let row=0; row<brickRows; row++) {
@@ -177,7 +194,10 @@ const Canvas = () => {
                     let b = brickCoords[row][col];
                     if (b.count > 0) {
                         
-                        if(nextBallx > b.x && nextBallx < b.x+brickWidth && nextBally > b.y && nextBally < b.y+brickHeight) {
+                        // hit brick vertically
+                        if(ballCenterx > b.x && ballCenterx < b.x+brickWidth && 
+                            nextBally >= b.y && 
+                            nextBally <= b.y+brickHeight) {
                             setBalldy(prevBalldy => -prevBalldy);
                             b.count--;
 
@@ -185,10 +205,20 @@ const Canvas = () => {
 
                             if(gameScoreRef.current == brickRows*brickColumns) {
                                 alert("YOU WIN, CONGRATULATIONS!");
-                                document.location.reload();
-                                // clearInterval(canvasInterval); // Needed for Chrome to end game
+                                clearInterval(canvasInterval); // Needed for Chrome to end game
                             }
+                        }
+                        if(ballCentery > b.y && ballCentery < b.y+brickHeight && 
+                            nextBallx-ballWidth >= b.x && nextBallx <= b.x+brickWidth) {
 
+                            setBalldx(prevBalldx => -prevBalldx);
+                            b.count--;
+
+                            setGameScore(prevGameScore => prevGameScore + 1);
+                            if(gameScoreRef.current == brickRows*brickColumns) {
+                                alert("YOU WIN, CONGRATULATIONS!");
+                                clearInterval(canvasInterval); // Needed for Chrome to end game
+                            }
 
                         }
                         
@@ -200,18 +230,18 @@ const Canvas = () => {
 
 
             // check if ball hit the side walls
-            if (nextBallx > canvasWidth-ballRadius ||
-                nextBallx < ballRadius) {
+            if (nextBallx > canvasWidth-ballWidth ||
+                nextBallx < 0) {
                 setBalldx(prevBalldx => -prevBalldx);
             } 
             
             // check if ball hit the top wall
-            if (nextBally < ballRadius) {    
+            if (nextBally < 0) {    
                 setBalldy(prevBalldy => -prevBalldy);
             }
 
             // check if ball is hit the ground`
-            else if (nextBally > canvasHeight-ballRadius) {
+            else if (nextBally > canvasHeight-ballWidth) {
 
                     // Game Over
                     setGameStatus("lost");
@@ -222,20 +252,20 @@ const Canvas = () => {
                     clearInterval(canvasIntervalRef.current);
             }
             // check if ball hit the paddle
-            else if (nextBally > currentPaddley-ballRadius &&
-                currentBallx > currentPaddlex &&
-                currentBallx < currentPaddlex + paddleWidth) {
+            else if (nextBally > currentPaddley-ballWidth &&
+                ballCenterx > currentPaddlex &&
+                ballCenterx < currentPaddlex + paddleWidth) {
 
                 let paddleCenter = currentPaddlex + (paddleWidth/2);
                 
                 // angle of the ball increases towards the edge of the paddle
-                let distFromCenter = Math.abs(paddleCenter-currentBallx)
+                let distFromCenter = Math.abs(paddleCenter-ballCenterx)
                 let percentFromCenter = distFromCenter / (paddleWidth/2);
                 
                 let speedx = ballSpeedRef.current*percentFromCenter
                 
                 // if the ball hit left side of the paddle, ball bounces left  
-                speedx = (currentBallx < paddleCenter) ? -speedx : speedx 
+                speedx = (ballCenterx < paddleCenter) ? -speedx : speedx 
 
                 // using Pythagorean theorem
                 let speedy = ((ballSpeedRef.current**2) - (speedx**2))**0.5
@@ -251,7 +281,7 @@ const Canvas = () => {
 
             // if right key is pressed, move paddle right
             if (rightPressedRef.current) {
-                setPaddlex(prevPaddlex => prevPaddlex+7)
+                setPaddlex(prevPaddlex => prevPaddlex+paddleSpeed)
 
 
                 if(paddlexRef.current+paddleWidth > canvasWidth) {
@@ -262,7 +292,7 @@ const Canvas = () => {
     
             // if left key is pressed, move paddle left
             else if (leftPressedRef.current) {
-                setPaddlex(prevPaddlex => prevPaddlex-7)
+                setPaddlex(prevPaddlex => prevPaddlex-paddleSpeed)
 
                 if(paddlexRef.current < 0) {
                     setPaddlex(0)
@@ -274,16 +304,22 @@ const Canvas = () => {
   
     useEffect(() => {
 
+
         console.log("hi begin");
 
+        ballImg.src = ballSrc
 
+        bricks1Img.src = bricks1Src
+        
         let canvasCnt = document.getElementById("canvas-cnt") as HTMLDivElement;
         canvasCnt.focus();
 
 
         let canvas = document.getElementById("bricks-canvas") as HTMLCanvasElement;
 
+
         let ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+
 
         setCanvasContext(ctx);
 
