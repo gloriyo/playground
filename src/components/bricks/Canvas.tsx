@@ -9,13 +9,22 @@ import Alert from './Alert';
 
 import ballSrc from "./img/ball.png";
 import bricks1Src from "./img/bricks-1.png";
+import bricks2Src from "./img/bricks-2.png";
+import bricks3Src from "./img/bricks-3.png";
+
+import paddleSrc from "./img/paddle.png";
 
 const ballImg = new Image();
 const bricks1Img = new Image();
+const bricks2Img = new Image();
+const bricks3Img = new Image();
+
+const paddleImg = new Image();
+
 
 const scaleFactor = 2.5;
 
-const defaultCanvasWidth = 460 * scaleFactor;
+const defaultCanvasWidth = 457 * scaleFactor;
 const defaultCanvasHeight = 400 * scaleFactor;
 
 
@@ -24,14 +33,13 @@ const ballWidth = 15 * scaleFactor;
 const paddleHeight = 10 * scaleFactor;
 const paddleWidth = 70 * scaleFactor;
 
-
 const brickRows = 5;
 const brickColumns = 7;
 const brickWidth = 60 * scaleFactor;
 const brickHeight = 20 * scaleFactor;
-const brickPadding = 5 * scaleFactor;
+const brickPadding = 4 * scaleFactor;
 const brickOffsetTop = 25 * scaleFactor; 
-const brickOffsetLeft = 5 * scaleFactor;
+const brickOffsetLeft = 7 * scaleFactor;
 
 type coords = { [value: string]: number }
 
@@ -53,8 +61,6 @@ brickCoords.forEach((row, i) => {
         let brickY = (i*(brickHeight+brickPadding))+brickOffsetTop;
         console.log(`i ${i} j ${j}`)
         console.log(`x ${brickX} y ${brickY}`)
-        // b.x = brickX;
-        // b.y = brickY;
 
         brickCoords[i][j] = {x: brickX, y: brickY, count: 1};
         
@@ -63,19 +69,7 @@ brickCoords.forEach((row, i) => {
     });
 });
 
-// console.log("lol " , brickCoords)
-
 const Canvas = () => {
-
-
-
-
-
-    
-
-    // console.log(brickCoords);
-    
-
 
     const [gameStatus, setGameStatus] = useState("ongoing");
 
@@ -84,9 +78,6 @@ const Canvas = () => {
 
     const [canvasWidth, setCanvasWidth] = useState(defaultCanvasWidth);
     const [canvasHeight, setCanvasHeight] = useState(defaultCanvasHeight);
-
-
-    // const [bricks, setBricks, bricksRef] = useState(brickCoords);
 
 
     const [ballx, setBallx, ballxRef] = useState((canvasWidth-ballWidth)/2);
@@ -113,68 +104,58 @@ const Canvas = () => {
     const [leftPressed, setLeftPressed, leftPressedRef] = useState(false);
 
     useEffect(() => {
-        
-
-        // console.log("x ", ballx, "y ", bally);
-
         if(canvasContext) {
             canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
 
             // draw the ball
             canvasContext.beginPath();
-            // canvasContext.arc(ballx, bally, ballWidth, 0, Math.PI*2);
-            // canvasContext.fillStyle = "#0095DD";
-            // canvasContext.fill();
-            // canvasContext.closePath();
-
             canvasContext.drawImage(ballImg, ballx, bally, ballWidth, ballWidth);
-
-
 
             // draw the paddle
             canvasContext.beginPath();
-            canvasContext.rect(paddlex, paddley, paddleWidth, paddleHeight);
-            canvasContext.fillStyle = "#0095DD";
-            canvasContext.fill();
-            canvasContext.closePath();
+            // canvasContext.rect(paddlex, paddley, paddleWidth, paddleHeight);
+            // canvasContext.fillStyle = "#0095DD";
+            // canvasContext.fill();
+            // canvasContext.closePath();
+            canvasContext.drawImage(paddleImg, paddlex, paddley, paddleWidth, paddleHeight);
+
 
             // draw the bricks
-            brickCoords.forEach((row, i) => 
+            brickCoords.forEach((row, i) => {
+                let chosenImg = bricks3Img;
+                switch (i) {
+                    case 0:
+                        chosenImg = bricks1Img;
+                        break;
+                    case 1:
+                        chosenImg = bricks2Img;
+                }
                 row.forEach((b, j) => {
                     if (b.count > 0) {
                         canvasContext.beginPath();
-                        // canvasContext.rect( b.x, b.y, brickWidth, brickHeight);
-                        // canvasContext.fillStyle = "#0095DD";
-                        // canvasContext.fill();
-                        // canvasContext.closePath();
-                        canvasContext.drawImage(bricks1Img, b.x, b.y, brickWidth, brickHeight)
-                    }
+                        
 
+                        canvasContext.drawImage(chosenImg, b.x, b.y, brickWidth, brickHeight)
+                    }
                 })
-            );
+            });
 
             // display the score
             canvasContext.font = "16px Arial";
             canvasContext.fillStyle = "#0095DD";
             canvasContext.fillText("Score: "+gameScore, 8, 18);
 
-
         }
     }, [canvasContext, ballx, bally])
 
     const draw = (ctx: CanvasRenderingContext2D) => {
 
-        // console.log("drawing");
-
         if(ctx) {
             let currentBalldx = balldxRef.current;
             let currentBalldy = balldyRef.current;
 
-
             setBallx(prevBallx => prevBallx + currentBalldx);
-
             setBally(prevBally => prevBally + currentBalldy);
-
 
             let currentBallx = ballxRef.current;
             let currentBally = ballyRef.current;
@@ -308,16 +289,17 @@ const Canvas = () => {
         console.log("hi begin");
 
         ballImg.src = ballSrc
-
         bricks1Img.src = bricks1Src
-        
+        bricks2Img.src = bricks2Src
+        bricks3Img.src = bricks3Src
+
+        paddleImg.src = paddleSrc
+
         let canvasCnt = document.getElementById("canvas-cnt") as HTMLDivElement;
         canvasCnt.focus();
 
 
         let canvas = document.getElementById("bricks-canvas") as HTMLCanvasElement;
-
-
         let ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 
 
@@ -339,12 +321,9 @@ const Canvas = () => {
 
             if (event.code === "ArrowLeft") {
                 setLeftPressed(true);
-                // console.log("ArrowLeft pressed");
 
-            
             } else if (event.code === "ArrowRight") {
-                // console.log("ArrowRight pressed");
-                
+
                 setRightPressed(true);
             }
         }    
@@ -354,14 +333,11 @@ const Canvas = () => {
 
         if (gameStatus === "ongoing") {
             if (event.code === "ArrowLeft") {
-                //   alert(`You have typed "${enteredText}"`);
-                    // console.log("ArrowLeft lifted");
                     
                     setLeftPressed(false);
         
             
                 } else if (event.code === "ArrowRight") {
-                    // console.log("ArrowRight lifted");
                     
                     setRightPressed(false);
                 }
