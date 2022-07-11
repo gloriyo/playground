@@ -50,42 +50,35 @@ canvas {
 
 .alert {
     /* background-color: #40d2ffd3; */
-    background-color: #f2f6f873;
+    background-color: #f2f6f8b9;
     position: absolute !important;
-    /* padding: 1rem 1rem; */
-    /* margin-bottom: 1rem !important; */
-    /* border: 1px solid transparent;
-    border-radius: 0.25rem; */
+    padding: 1.7rem !important;
 
     font-size: xx-large;
-    width: 472px;
-    /* height: 70px; */
+    width: 400px;
 
     top: 40%;  
     left: 50%; 
     transform: translate(-50%, -50%);
     display: grid;
-    /* text-align: center; */
-    padding: 1em !important;
-  }
+
+}
+
 
 .play-button {
     
     background-color: #ffc100 !important;
     border: none !important;
-    width: 150px;
+    width: 170px;
     font-size: small !important;
     color: white !important;
 
     justify-self: center;
 
-    /* padding: 0.3em !important; */
     margin: 0.7em;
     font-size: 0.7em !important;
 }
 
 .play-button:hover {
     background-color: #ffa900  !important;
-    /* width: 100px; */
-    /* font-size: small !important; */
 }
