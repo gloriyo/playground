@@ -154,9 +154,9 @@ const Canvas = () => {
             });
 
             // display the score
-            canvasContext.font = "16px Arial";
-            canvasContext.fillStyle = "#0095DD";
-            canvasContext.fillText("Score: "+gameScore, 8, 18);
+            // canvasContext.font = "16px Arial";
+            // canvasContext.fillStyle = "#0095DD";
+            // canvasContext.fillText("Score: "+gameScore, 8, 18);
 
         }
     }, [canvasContext, ballx, bally])

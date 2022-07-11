@@ -24,6 +24,15 @@
   color: white;
 }
 
+.navbar {
+  font-size: 1.75em;
+}
+
+.navbar-brand {
+  font-size: 1.2em !important;
+}
+
+
 .App-link {
   color: #61dafb;
 }
