@@ -16,6 +16,7 @@ import bricks5Src from "./img/bricks-5.png";
 
 import paddleSrc from "./img/paddle.png";
 
+
 const ballImg = new Image();
 const bricks1Img = new Image();
 const bricks2Img = new Image();
@@ -77,7 +78,7 @@ brickCoords.forEach((row, i) => {
 
 const Canvas = () => {
 
-    const [gameStatus, setGameStatus] = useState("ongoing");
+    const [gameStatus, setGameStatus, gameStatusRef] = useState("ongoing");
 
     const [gameScore, setGameScore, gameScoreRef] = useState(0);
 
@@ -222,7 +223,6 @@ const Canvas = () => {
                 }
             }
 
-
             // check if ball hit the side walls
             if (nextBallx > canvasWidth-ballWidth ||
                 nextBallx < 0) {
@@ -238,8 +238,11 @@ const Canvas = () => {
             else if (nextBally > canvasHeight-ballWidth) {
 
                     // Game Over
+                if (gameStatusRef.current === "ongoing") {
                     setGameStatus("lost");
                     console.log("gameover")
+                }
+
 
                     // console.log(canvasIntervalRef.current)
 
