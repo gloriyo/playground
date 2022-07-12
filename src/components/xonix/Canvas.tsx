@@ -84,7 +84,7 @@ const Canvas = () => {
     const [canvasWidth, setCanvasWidth] = useState(defaultCanvasWidth);
     const [canvasHeight, setCanvasHeight] = useState(defaultCanvasHeight);
 
-    const [boxCoords, setBoxCoords] = useState(boardCoords);
+    const [boxCoords, setBoxCoords, boxCoordsRef] = useState(boardCoords);
 
     const [ballX, setBallX, ballXRef] = useState((canvasWidth-ballDiameter)/2);
     const [ballY, setBallY, ballYRef] = useState((canvasHeight-ballDiameter)/2);
@@ -150,9 +150,11 @@ const Canvas = () => {
 
             canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
 
+            let currentBoxCoords = boxCoordsRef.current;
+            console.log(currentBoxCoords)
 
             // draw the background boxes
-            boxCoords.forEach((row, i) => {
+            currentBoxCoords.forEach((row, i) => {
                 row.forEach((b, j) => {
                     if (b.filled) {
                         canvasContext.beginPath();
@@ -286,6 +288,19 @@ const Canvas = () => {
                     }
                     break;
             }
+
+            let updatedBoxCoords = [...boxCoords];
+            let currentCoords = updatedBoxCoords[currentRow][currentColumn];
+
+            if (!currentCoords.filled) {
+                updatedBoxCoords[currentRow][currentColumn] = { filled: true };
+                setBoxCoords(updatedBoxCoords);
+                // console.log(updatedBoxCoords)
+                console.log("i: " + currentRow + "j: " + currentColumn)
+                console.log(currentCoords.filled)
+            }
+            
+
 
             setKeyPressed({ previous: currentKeyPressed, current: currentKeyPressed });
 
