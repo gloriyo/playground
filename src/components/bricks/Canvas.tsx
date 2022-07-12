@@ -66,13 +66,9 @@ brickCoords.forEach((row, i) => {
     row.forEach((b, j) => {
         let brickX = (j*(brickWidth+brickPadding))+brickOffsetLeft;
         let brickY = (i*(brickHeight+brickPadding))+brickOffsetTop;
-        console.log(`i ${i} j ${j}`)
-        console.log(`x ${brickX} y ${brickY}`)
 
         brickCoords[i][j] = {x: brickX, y: brickY, count: 1};
         
-
-        console.log(b)
     });
 });
 
@@ -272,7 +268,7 @@ const Canvas = () => {
                 setBalldx(speedx);
                 setBalldy(speedy);
 
-                console.log(percentFromCenter)
+                // console.log(percentFromCenter)
             
             }
 
@@ -322,7 +318,7 @@ const Canvas = () => {
 
         const intervalId = setInterval(() => draw(ctx), 15);
 
-        console.log("INTERVAL", intervalId)
+        // console.log("INTERVAL", intervalId)
         setCanvasInterval(intervalId)
 
         // requestAnimationFrame(() => draw(ctx));

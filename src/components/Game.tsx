@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import TBoard from './tic-tac-toe/Board';
 import BBoard from './bricks/Board';
+import XBoard from './xonix/Board';
 
 interface props {
 	game: string;
@@ -15,6 +16,7 @@ const Game = ({ game } : props ) => {
 		<div>
 			{gameName == "tic-tac-toe" && <TBoard />}
 			{gameName == "bricks" && <BBoard />}
+			{gameName == "xonix" && <XBoard />}
 		</div>
 		
 	

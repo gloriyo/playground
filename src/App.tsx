@@ -17,6 +17,7 @@ function App() {
 					<Route path="/" element={<Game game="tic-tac-toe" />} />
 					<Route path="tic-tac-toe" element={<Game game="tic-tac-toe" />} />
 					<Route path="bricks" element={<Game game="bricks"/>} />
+					<Route path="xonix" element={<Game game="xonix"/>} />
 				</Routes>
 			</BrowserRouter>
     </div>

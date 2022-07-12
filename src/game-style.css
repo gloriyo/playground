@@ -36,10 +36,15 @@
 }
 
 canvas {
-    width: 800px;
+    width: 900px;
 }
 
 #canvas-cnt:focus {
+    outline: none;
+
+}
+
+#xonix-canvas-cnt:focus {
     outline: none;
 
 }
