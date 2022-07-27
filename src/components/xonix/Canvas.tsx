@@ -80,7 +80,7 @@ let boardCoords:coords[][] = Array.from(Array(boardRows), () => Array(boardColum
 
 for (let i=0; i<boardRows; i++) {
 
-    if (i == 0 || i == boardRows-1) {
+    if (i === 0 || i === boardRows-1) {
         // fill entire row
         boardCoords[i] = Array(boardColumns).fill({ filled: FILLED_BOX })
         defualtTilesRemaining -= boardColumns;
@@ -108,10 +108,15 @@ const Canvas = () => {
     const [canvasWidth, setCanvasWidth] = useState(defaultCanvasWidth);
     const [canvasHeight, setCanvasHeight] = useState(defaultCanvasHeight);
 
-    const [boxCoords, setBoxCoords, boxCoordsRef] = useState(boardCoords);
+    const [boxCoords, setBoxCoords, tileStatusRef] = useState(boardCoords);
     const [prevCoords, setPrevCoords, prevCoordsRef] = useState<XYcoords>({x: -1, y: -1});
 
     const [lineCoords, setLineCoords, lineCoordsRef] = useState<{ x: number, y: number, direction: String }[]>([]);
+
+    const [fillCoords, setFillCoords, fillCoordsRef] = useState<{ x: number, y: number }[]>([]);
+
+    const [claimingTiles, setClaimingTiles, claimingTilesRef] = useState<{ x: number, y: number }[]>([]);
+
 
     const [tilesRemaining, setTilesRemaining, tilesRemainingRef] = useState(defualtTilesRemaining);
 
@@ -181,13 +186,13 @@ const Canvas = () => {
 
             canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
 
-            let currentBoxCoords = boxCoordsRef.current;
+            let currentBoxCoords = tileStatusRef.current;
             // console.log(currentBoxCoords)
 
             // draw the background boxes
             currentBoxCoords.forEach((row, i) => {
                 row.forEach((b, j) => {
-                    if (b.filled != EMPTY_BOX) {
+                    if (b.filled !== EMPTY_BOX) {
                         canvasContext.beginPath();
                         canvasContext.rect(j*playerWidth, i*playerWidth, playerWidth, playerHeight);
                         canvasContext.fillStyle = "#AAEEFF";
@@ -227,6 +232,11 @@ const Canvas = () => {
 
             let ballCenterX = nextBallX + (ballDiameter/2)
             let ballCentery = nextBallY + (ballDiameter/2)
+
+
+            
+
+
 
         
 
@@ -325,7 +335,7 @@ const Canvas = () => {
                     break;
             }
 
-            let updatedBoxCoords = boxCoordsRef.current;
+            let updatedBoxCoords = tileStatusRef.current;
             let currentCoords = updatedBoxCoords[currentRow][currentCol];
 
             
@@ -341,7 +351,7 @@ const Canvas = () => {
 
 
                 // check if current tile is not filled
-                if (currentCoords.filled == EMPTY_BOX) {
+                if (currentCoords.filled === EMPTY_BOX) {
                     
                     let updatedLineCoords = lineCoordsRef.current;
 
@@ -353,7 +363,7 @@ const Canvas = () => {
 
                     setPlayerStatus(DRAWING);
                     // updatedBoxCoords[currentRow][currentCol] = { filled: CLAIMING_BOX };
-                    updatedBoxCoords[currentRow][currentCol] = { filled: CLAIMING_BOX };
+                    updatedBoxCoords[currentRow][currentCol] = { filled: FILLED_BOX };
                     
                     setBoxCoords(updatedBoxCoords);
 
@@ -373,7 +383,7 @@ const Canvas = () => {
 
                 
                 // if the the player is drawing & has created a closed shape
-                } else if (currPlayerStatus === DRAWING && currentCoords.filled != EMPTY_BOX) {
+                } else if (currPlayerStatus === DRAWING && currentCoords.filled !== EMPTY_BOX) {
                     setPlayerStatus(NOT_DRAWING);
 
                     console.log("not drawing");
@@ -388,6 +398,7 @@ const Canvas = () => {
 
                     // fill smaller closed shape
                     floodFillShape(seedCoords);
+
 
                     // empty lineCoords list
                     // setLineCoords([]);
@@ -451,7 +462,7 @@ const Canvas = () => {
         console.log(currLineCoords);
         
         
-        let currBoxCoords = boxCoordsRef.current;
+        let currBoxCoords = tileStatusRef.current;
 
         // let shapeCoords = {
         //     left: { x: -1, y: -1 },
@@ -466,10 +477,10 @@ const Canvas = () => {
         currLineCoords.forEach((tile, i) => {
 
             // travelling vertically
-            if (tile.direction == "up" || tile.direction == "down") {
+            if (tile.direction === "up" || tile.direction === "down") {
 
                 // if player is going down, right is left
-                let playerFlipped = (tile.direction == "down") ? true : false; 
+                let playerFlipped = (tile.direction === "down") ? true : false; 
 
                 // check the left side of the board
                 if ((!leftCoordsFound && !playerFlipped) || (!rightCoordsFound && playerFlipped)) {
@@ -513,13 +524,13 @@ const Canvas = () => {
             // travelling horizontally
             } else {
                 // if player is going left, right is up, if going right, right is down
-                let playerGoingRight = (tile.direction == "right") ? true : false; 
+                let playerGoingRight = (tile.direction === "right") ? true : false; 
 
 
                 // check the upper side of the board
                 if ((!rightCoordsFound && !playerGoingRight) || (!leftCoordsFound && playerGoingRight)) {
 
-                    let upperRow = tile.x - 1;
+                    let upperRow = tile.y - 1;
                     if (upperRow >= 0) {
                         let rightTile = currBoxCoords[upperRow][tile.x];
                         if (rightTile.filled === EMPTY_BOX) {
@@ -538,7 +549,7 @@ const Canvas = () => {
 
                 // check the bottom side of the board
                 if ((!leftCoordsFound && !playerGoingRight) || (!rightCoordsFound && playerGoingRight)) {
-                    let lowerRow = tile.x + 1;
+                    let lowerRow = tile.y + 1;
                     if (lowerRow < boardRows) {
                         let leftTile = currBoxCoords[lowerRow][tile.x];
                         if (leftTile.filled === EMPTY_BOX) {
@@ -566,28 +577,53 @@ const Canvas = () => {
 
     const floodFillShape = (coordsInShape : XYcoords[]) => {
 
-        let currBoxCoords = boxCoordsRef.current;
+        // let currBoxCoords = tileStatusRef.current;
         // coordsInShape.forEach((tile, i) => {
 
         for (let i = 0; i < coordsInShape.length; i++) {
             // check if shape is smaller or equal to half of remaining area
 
-            // make a copy of boardCoords
-            let boxCoordsCopy = [];
-            for (let j = 0; j < currBoxCoords.length; j++) {
-                boxCoordsCopy[j] = currBoxCoords[j].slice();
-            }
+            // // make a copy of boardCoords
+            // let boxCoordsCopy = [];
+            // for (let j = 0; j < currBoxCoords.length; j++) {
+            //     boxCoordsCopy[j] = currBoxCoords[j].slice();
+            // }
 
             let currTile = coordsInShape[i];
-            let tileCount = floodFillTile(currTile.y, currTile.x, boxCoordsCopy, 0);
+            floodFillTile(currTile.y, currTile.x, 0);
             let currTilesRemaining = tilesRemainingRef.current;
+
+
+
             // check if it is the smaller shape
-            if (tileCount <= currTilesRemaining / 2) {
-                // mark claiming tiles as filled tiles
+
+            let currLineCoords = lineCoordsRef.current;
+            let currBoxCoords = tileStatusRef.current;
+
+            let currFillCoords = fillCoordsRef.current; 
 
 
+            let shapeSize = currFillCoords.length;
+
+            let tileCount = currFillCoords.length + currLineCoords.length;
+
+
+            if (shapeSize <= currTilesRemaining / 2) {
                 
-                console.log("tiles to fill: " +  tileCount);
+                let currClaimingTiles = currFillCoords.concat(currLineCoords);
+
+                // let currClaimingTiles = [...currFillCoords, ...currLineCoords];
+
+
+
+                setClaimingTiles(currClaimingTiles);
+
+
+                setLineCoords([]);
+                setFillCoords([]);
+
+
+                // console.log("tiles to fill: " +  tileCount);
 
                 // currBoxCoords.forEach((row, r) => {
                 //     row.forEach((b, c) => {
@@ -597,57 +633,106 @@ const Canvas = () => {
                 //     })
                 // });
 
-                for (let row = 0; row < boardRows; row++) {
-                    for (let col = 0; col < boardColumns; col++) {
-                        let tile = boxCoordsCopy[row][col];
-                        if (tile.filled == CLAIMING_BOX) {
-                            currBoxCoords[row][col] = { filled: FILLED_BOX };
-                            // setBoxCoords(currBoxCoords);
-                        }
-                    }
-                }
 
-                setBoxCoords(currBoxCoords);
+                // mark claiming tiles as filled tiles
+
+                
+
+                // currLineCoords.forEach((tile, i) => {
+                //     currBoxCoords[tile.y][tile.x] = { filled: FILLED_BOX };
+                
+                // });
+
+
+                // for (let j = 0; j < currLineCoords.length; j++) {
+                //     let row = currLineCoords[j].y;
+                //     let col = currLineCoords[j].x;
+                //     currBoxCoords[row][col] = { filled: FILLED_BOX };
+                // }
+
+                
+                // setLineCoords([]);
+
+
+
+
+                // // for (let row = 0; row < boardRows; row++) {
+                // //     for (let col = 0; col < boardColumns; col++) {
+                // //         let tile = boxCoordsCopy[row][col];
+                // //         if (tile.filled == CLAIMING_BOX) {
+                // //             currBoxCoords[row][col] = { filled: FILLED_BOX };
+                // //             // setBoxCoords(currBoxCoords);
+                // //         }
+                // //     }
+                // // }
+
+                // // setBoxCoords(currBoxCoords);
+
+
                 setTilesRemaining(currTilesRemaining-tileCount);
 
                 break;
             }
+
+            setFillCoords([]);
+
         }    
     }
 
 
     // https://www.codeguru.co.in/2021/10/flood-fill-algorithm-in-javascript.html
-    const floodFillTile = (row : number, col: number, tileCoords:coords[][], fillCount: number) => {
+    const floodFillTile = (row : number, col: number, fillCount: number) => {
 
-        let currTile = tileCoords[row][col];
 
-        tileCoords[row][col] = { filled: CLAIMING_BOX };
 
+        
+        // let currTile = tileCoords[row][col];
+
+        let currBoxCoords = tileStatusRef.current;
+        // let currLineCoords = lineCoordsRef.current;
+
+        let currFillCoords = fillCoordsRef.current; 
+
+
+
+        // let currTile = tileStatusRef.current;
+
+        // currBoxCoords[row][col] = { filled: CLAIMING_BOX };
+
+
+        // add tile to lineCoords
 
         console.log("flooding tile: row:" + row + " col: " + col);
-        console.log(currTile);
+        console.log(currBoxCoords[row][col]);
 
+
+        const visited = currFillCoords.some(coord => (row === coord.y && col == coord.x));
 
         // check if border (filled tile) is reached
-        if (currTile.filled !== EMPTY_BOX) {
-            return 0;
+        if (currBoxCoords[row][col].filled !== EMPTY_BOX || visited) {
+            return;
         } 
 
-        fillCount++;
+        // fillCount++;
 
+        currFillCoords.push({ x: col, y: row });
+
+
+        setFillCoords(currFillCoords);
 
 
         
 
-        // // visit up
-        // fillCount += floodFillTile(row-1, col, tileCoords, fillCount);
-        // // visit right
-        // fillCount += floodFillTile(row+1, col, tileCoords, fillCount);
+        // visit up
+        // visit up
+       floodFillTile(row - 1, col, fillCount);
+        // visit right
+       floodFillTile(row+1, col, fillCount);
         
-        // // visit left
-        // fillCount += floodFillTile(row, col-1, tileCoords, fillCount);
-        // // visit down
-        // fillCount += floodFillTile(row, col+1, tileCoords, fillCount);
+        // visit left
+       floodFillTile(row, col-1, fillCount);
+        // visit down
+       floodFillTile(row, col+1, fillCount);
 
 
         return fillCount;
@@ -671,6 +756,20 @@ const Canvas = () => {
             }
         }    
     }
+
+
+    useEffect(() => {
+
+        let currClaimingTiles = claimingTilesRef.current;
+        let currBoxCoords = tileStatusRef.current;
+
+        for (let j = 0; j < currClaimingTiles.length; j++) {
+            let row = currClaimingTiles[j].y;
+            let col = currClaimingTiles[j].x;
+            currBoxCoords[row][col] = { filled: FILLED_BOX };
+        }
+    }, [claimingTiles])
+
 
     // const handleKeyUp = (event: React.KeyboardEvent<HTMLDivElement>) => {
 
